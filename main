@@ -1,0 +1,251 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Jun 07 15:52:39 2015
+
+@author: filip
+
+#                   ############################                   #
+#                   ### available functions: ###                   #
+#                   ############################                   #
+
+-------------------
+Vowel manipulation
+-------------------
+is_fonien(word,n):                   #Ask if a specific letter is a vowel. Requires the word iteration index (n).
+#                                         Returns True/False
+is_2nd_fonien(single word,n)         #Ask if this letter and the next make up a valid vowel cluster.
+#                                         Returns True/False
+is_3rd_fonien(single word,n)         #Ask if this letter, the next and the one after make up a valid vowel cluster.
+#                                         Returns True/False
+identify_fonien_block(single word,n) #Feed it a vowel and get back a string with a valid vowel cluster starting from the vowel
+last_fonien(single word,n)           #Ask if the vowel you fed it is the last fonien in the word. 
+#                                         Returns True/False
+
+-------------------
+Word manipulation
+-------------------
+wordify(some input) breaks input into words and returns a list made of the words
+syllabize_word(single word)          #Feed it a word and get a string with a hyphen or space separating each syllable
+syllabize_sentences(whatever)        #Feed it whatever and it will apply wordify() and syllabize_word() to get you
+#                                       a string of the whole input with a hyphen or space separating each syllabe
+----------
+statistics
+----------
+count_my_syllabes(output)            #Intended to be used on the output of syllabize_sentences(). Returns the number of
+#                                    #syllabes, words and sentences (actually just counts the periods so beware of(...)
+
+###########################
+"""
+from __future__ import unicode_literals
+import sys
+
+def wordify(my_input):
+    #breaks input into words and returns a list made of the words
+    wordbuffer = ''
+    wordified = []
+    for n,i in enumerate(my_input):
+        wordbuffer += i
+        if i == ' ':
+            try: 
+                if my_input[n+1] == ' ':
+                    pass
+                else:
+                    wordified.append(wordbuffer)
+                    wordbuffer = ''
+            except IndexError:
+                wordified.append(wordbuffer)
+                wordbuffer = ''
+                break
+                
+        else:
+            try: #just testing to see if end of string
+                a = my_input[n+1]
+            except IndexError:
+                wordified.append(wordbuffer)
+                wordbuffer = ''
+    
+    return wordified
+    
+def is_fonien(word,n): #True/False
+    #args: word is the iterable, n is the current iteration index
+    if word[n] in fonien:
+        return True
+    else:
+        return False
+        
+def is_2nd_fonien(word,n): #True/False
+    #args: word is the iterable, n is the current iteration index
+    two_letters = word[n] + word[n+1]
+    if two_letters in fonien2:
+        return True
+    else:
+        return False
+
+def is_3rd_fonien(word,n): #True/False
+    #args: word is the iterable, n is the current iteration index
+    three_letters= word[n] + word[n+1] + word[n+2]
+    if three_letters in fonien3:
+        return True
+    else:
+        return False
+        
+def identify_fonien_block(word,n):
+    #how many letters compose the fonien cluster it was fed
+    fonien_block = word[n]
+    try: #to see if the next letter is in fonien2       
+        if is_2nd_fonien(word,n) == True:
+            fonien_block = word[n]+ word[n+1]
+            try:#to see if second next letter is in fonien3
+                if is_3rd_fonien(word,n) == True:
+                   fonien_block = word[n] + word[n+1] + word[n+2]                
+            except IndexError: 
+                pass
+    except IndexError: #this fonien is the last letter
+        pass
+
+
+    return fonien_block        
+
+def last_fonien(word,n):
+    #args: word is iterable, n is current iteration index
+    
+    #actually the function just looks for a fonien
+    # in the next 4 letters in the word. If not found,
+    # it concludes that word[n] was last fonien    
+    for number in range(4):
+        try: #to see if first next is fonien
+            
+            if word[n+1+number] in fonien:
+                return False
+                break
+        
+        except IndexError:
+            pass
+        
+    else:
+        return True
+def syllabize_word(word):
+    
+    syllabized_word = ''
+    #fonien_in_buffer will be >1 
+    # if we're in the middle of a multiletter vowel
+    fonien_in_buffer = 0 
+    
+    for n,i in enumerate(word):
+        # if we have already handled this as part of a multiletter vowel,
+        # skip to the next letter
+        for number in range(1):
+            if fonien_in_buffer > 0:
+                fonien_in_buffer -= 1
+                break
+
+        else:
+            if is_fonien(word,n) == True:
+            
+                fonien_block = identify_fonien_block(word,n)
+                
+                fonien_in_buffer += len(fonien_block)-1
+                syllabized_word += fonien_block
+                
+                if last_fonien(word,n+len(fonien_block)-1) == False:
+                    syllabized_word += '-'
+            else:
+                syllabized_word += i
+    return syllabized_word
+
+def syllabize_sentences(my_input):
+
+    
+    my_output = ''    
+    
+    wordified = wordify(my_input)
+    
+    for word in wordified:
+        my_output += syllabize_word(word)
+    return my_output
+
+def count_my_syllabes(my_output):
+    
+    # intended to be used only after wordify(my_input) is called
+    
+    syllabe_counter = 0
+    word_counter = 0
+    sentence_counter = 0
+    
+    
+    for word in wordify(my_output):
+        word_counter += 1
+        print word
+    for n,char in enumerate(my_output):
+        if char == ' ':
+            try:
+                #elliminate double space
+                if my_output[n+1] == ' ':
+                    print 'n' 
+                else:
+                    syllabe_counter += 1
+            except IndexError:
+                print 'yes'
+                syllabe_counter += 1
+        elif char == '-':
+             try:
+                #elliminate double space
+                if my_output[n+1] == ' ':
+                    pass 
+                else:
+                    syllabe_counter += 1
+             except IndexError:
+                syllabe_counter += 1      
+        elif char == '.': 
+            try:
+                #elliminate double space
+                if my_output[n+1] == ' ':
+                    pass 
+                else:
+                    syllabe_counter += 1
+            except IndexError:
+                syllabe_counter += 1
+            sentence_counter += 1
+        else:
+            try:
+                #bull call to catch IndexError
+                if my_output[n+1] == 'a':
+                    pass
+            except IndexError:
+                syllabe_counter += 1
+                sentence_counter += 1
+    print syllabe_counter, "syllabes"
+    
+    print word_counter, "words"
+    print sentence_counter, "sentences"
+
+#list of single letter vowels
+fonien = ['α','ε','η','ι','ο','υ','ω', 'ά', 'έ', 'ή', 'ί','ό', 'ύ', 'ώ',
+          'Α','Ε','Η','Ι','Ο','Υ','Ω', 'Ά', 'Έ', 'Ή', 'Ί', 'Ό', 'Ύ', 'Ώ']
+#list of double letter vowels including kataxristika difthogga and other
+          # odd beasts
+fonien2 = ['αι', 'αί', 'ει', 'εί', 'οι', 'οί', 'υι', 'αυ','αύ', 
+           'ευ','εύ', 'άι', 'άη', 'όι', 'όη', 'ια','ιά', 'ιο', 'ιό', 'ου', 'ού',
+           'Αι', 'Αί', 'Ει', 'Εί', 'Οι', 'Οί', 'Υι', 'Αυ','Αύ', 
+           'Ευ','Εύ', 'Αι', 'Αη', 'Όι', 'Όη', 'Ια', 'Ιο', 'Ου', 'Ού']
+#list of triple letter vowels
+fonien3 = ['οιο', 'οιό', 'ειο', 'ειό', 'υος', 'ιου', 'ιού'] #υος isn't 3 vowels but still is a rule
+
+my_input = raw_input('phrase to syllabize:').decode(sys.stdin.encoding)
+
+
+my_output = syllabize_sentences(my_input)
+print my_output
+
+
+count_my_syllabes(my_output)
+#just a prompt to call for input
+for i in range(999):
+    a = raw_input('more? type y or n and press enter:')
+    if a == 'y':
+        my_input = raw_input('phrase to syllabize:').decode(sys.stdin.encoding)
+        my_output = syllabize_sentences(my_input)
+        print my_output
+        count_my_syllabes(my_output)
+    else: 
+        break
