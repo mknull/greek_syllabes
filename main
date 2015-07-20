@@ -34,8 +34,10 @@ statistics
 count_my_syllabes(output)            #Intended to be used on the output of syllabize_sentences(). Returns the number of
 #                                    #syllabes, words and sentences (actually just counts the periods so beware of(...)
 
-###########################
+#################################################################################
+#################################################################################
 """
+
 from __future__ import unicode_literals
 import sys
 
@@ -222,8 +224,7 @@ def count_my_syllabes(my_output):
 #list of single letter vowels
 fonien = ['α','ε','η','ι','ο','υ','ω', 'ά', 'έ', 'ή', 'ί','ό', 'ύ', 'ώ',
           'Α','Ε','Η','Ι','Ο','Υ','Ω', 'Ά', 'Έ', 'Ή', 'Ί', 'Ό', 'Ύ', 'Ώ']
-#list of double letter vowels including kataxristika difthogga and other
-          # odd beasts
+#list of double letter vowels including kataxristika difthogga and other odd beasts
 fonien2 = ['αι', 'αί', 'ει', 'εί', 'οι', 'οί', 'υι', 'αυ','αύ', 
            'ευ','εύ', 'άι', 'άη', 'όι', 'όη', 'ια','ιά', 'ιο', 'ιό', 'ου', 'ού',
            'Αι', 'Αί', 'Ει', 'Εί', 'Οι', 'Οί', 'Υι', 'Αυ','Αύ', 
