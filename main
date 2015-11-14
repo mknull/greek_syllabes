@@ -232,6 +232,10 @@ fonien2 = ['αι', 'αί', 'ει', 'εί', 'οι', 'οί', 'υι', 'αυ','αύ'
 #list of triple letter vowels
 fonien3 = ['οιο', 'οιό', 'ειο', 'ειό', 'υος', 'ιου', 'ιού'] #υος isn't 3 vowels but still is a rule
 
+##                        ##
+##      Example script    ##
+##                        ##
+
 my_input = raw_input('phrase to syllabize:').decode(sys.stdin.encoding)
 
 
